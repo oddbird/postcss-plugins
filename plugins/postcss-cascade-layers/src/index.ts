@@ -1,4 +1,4 @@
-import { Container } from "postcss";
+import { AtRule, Container } from "postcss";
 
 function postcssCascadeLayers(opts) {
 	return {
@@ -14,13 +14,42 @@ function postcssCascadeLayers(opts) {
 					atRule.params = `anon${layerCount}`;
 				}
 
-				layerCount += 1;
-				layerOrder[atRule.params] = layerCount;
+				let hasNestedLayers = false;
+				let hasUnlayeredStyles = false;
+
+				// check for where a layer has nested layers AND styles outside of those layers
+				atRule.each((node) => {
+					if (node.type == "atrule") {
+						hasNestedLayers = true;
+					} else if (node.type == "rule") {
+						hasUnlayeredStyles = true;
+					}
+				});
+
+				if (hasNestedLayers && hasUnlayeredStyles) {
+					let cloned = [];
+					//create final layer
+					atRule.append({
+						name: `layer ${atRule.params}.last `,
+					});
+
+					// go through the unlayered rules, clone, and delete from top level atRule
+					atRule.each((node) => {
+						if (node.type == "rule") {
+							console.log(node.clone());
+							cloned.push(node.clone());
+							node.remove();
+						}
+					});
+					// add cloned rules to new final layer
+					const lastNode = atRule.last as AtRule;
+					lastNode.append(cloned);
+				}
 			});
 
 			// 2nd walkthrough to transform unlayered styles - need highest specificity (layerCount + 1)
 			// root.walkRules((rule) => {
-			// 	console.log(rule, "second walkthrough");
+			// 	console.log("second walkthrough");
 			// });
 
 			// 3rd walkthrough to transform layered styles:
