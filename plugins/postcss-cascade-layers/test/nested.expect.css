@@ -1,17 +1,18 @@
 @layer A {
+
 	@layer Z {
 		target {
 			color: yellow;
 		}
 	}
 
-	@layer A.last {
-		target {
-			color: red;
-		}
+	@layer A-last  {
+	target {
+		color: red;
+	}
 
-		p {
-			color: blue;
-		}
+	p {
+		color: blue;
+	}
 	}
 }

@@ -30,13 +30,12 @@ function postcssCascadeLayers(opts) {
 					let cloned = [];
 					//create final layer
 					atRule.append({
-						name: `layer ${atRule.params}.last `,
+						name: `layer ${atRule.params}-last `,
 					});
 
 					// go through the unlayered rules, clone, and delete from top level atRule
 					atRule.each((node) => {
 						if (node.type == "rule") {
-							console.log(node.clone());
 							cloned.push(node.clone());
 							node.remove();
 						}
@@ -45,6 +44,12 @@ function postcssCascadeLayers(opts) {
 					const lastNode = atRule.last as AtRule;
 					lastNode.append(cloned);
 				}
+			});
+
+			root.walkAtRules("layer", (layer) => {
+				layerCount += 1;
+				layerOrder[layer.params] = layerCount;
+				console.log(layerOrder);
 			});
 
 			// 2nd walkthrough to transform unlayered styles - need highest specificity (layerCount + 1)
