@@ -86,7 +86,11 @@ const creator: PluginCreator<undefined> = () => {
 			root.walkAtRules('layer', (atRule) => {
 				// move out styles from atRule, insert before
 
-				atRule.replaceWith(new Rule({nodes: atRule.nodes, source: atRule.source, selector: `${generateNot(layerOrder[atRule.params])}`}));
+				atRule.each((node) => {
+					const transformedNode = transformNode(node, layerOrder[atRule.params]);
+					root.insertBefore(atRule, transformedNode);
+				});
+				atRule.remove();
 			});
 		},
 	};
@@ -95,6 +99,16 @@ const creator: PluginCreator<undefined> = () => {
 creator.postcss = true;
 
 export default creator;
+
+function transformNode(node, specificity){
+	const transformedNode = node.nodes.length > 1 ? node.nodes.map((innerNode) => {
+		const rule = new Rule({selector: `${innerNode.selector}${generateNot(specificity)}`});
+		rule.append({prop: innerNode.nodes[0].prop, value: innerNode.nodes[0].value, source: innerNode.source});
+	},
+	) : new Rule({selector: `${node.selector}${generateNot(specificity)}`, nodes: node.nodes, source: node.source });
+
+	return transformedNode;
+}
 
 function generateNot(specificity: number) {
 	let list = '';
