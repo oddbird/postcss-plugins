@@ -10,12 +10,15 @@ import { someAtRuleInTree } from './some-in-tree';
 import { sortRootNodes } from './sort-root-nodes';
 import { recordLayerOrder } from './record-layer-order';
 import { INVALID_LAYER_NAME } from './constants';
+import { splitImportantStyles } from './split-important-styles';
 
 const creator: PluginCreator<undefined> = () => {
 	return {
 		postcssPlugin: 'postcss-cascade-layers',
 		Once(root: Container) {
 			const model = new Model();
+
+			splitImportantStyles(root);
 
 			desugarAndParseLayerNames(root, model);
 
@@ -52,6 +55,12 @@ const creator: PluginCreator<undefined> = () => {
 					return;
 				}
 
+				if (rule.some((decl) => decl.type === 'decl' && decl.important)) {
+					// !important declarations have inverse priority in layers
+					// doing nothing will give the lowest specificity
+					return;
+				}
+
 				rule.selectors = rule.selectors.map((selector) => {
 					return adjustSelectorSpecificity(selector, model.layerCount * highestASpecificity);
 				});
@@ -82,8 +91,15 @@ const creator: PluginCreator<undefined> = () => {
 				}
 
 				const fullLayerName = model.getLayerParams(layerForCurrentRule).join('.');
+
+				let specificityAdjustment = model.layerOrder.get(fullLayerName) * highestASpecificity;
+				if (rule.some((decl) => decl.type === 'decl' && decl.important)) {
+					// !important declarations have inverse priority in layers
+					specificityAdjustment = model.layerCount - model.layerOrder.get(fullLayerName) * highestASpecificity;
+				}
+
 				rule.selectors = rule.selectors.map((selector) => {
-					return adjustSelectorSpecificity(selector, model.layerOrder.get(fullLayerName) * highestASpecificity);
+					return adjustSelectorSpecificity(selector, specificityAdjustment);
 				});
 			});
 

@@ -17,6 +17,9 @@ postcssTape(plugin)({
 	nested: {
 		message: "supports nested layer usage",
 	},
+	important: {
+		message: "supports important usage",
+	},
 	'anon-layer': {
 		message: "supports anonymous layer usage",
 	},
