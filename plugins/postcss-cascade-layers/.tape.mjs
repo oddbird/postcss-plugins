@@ -17,6 +17,9 @@ postcssTape(plugin)({
 	nested: {
 		message: "supports nested layer usage",
 	},
+	'nested-complex': {
+		message: "supports nested layer usage",
+	},
 	important: {
 		message: "supports important usage",
 	},
@@ -32,4 +35,12 @@ postcssTape(plugin)({
 	'invalid-rules': {
 		message: 'correctly handles invalid rules',
 	},
+	'warnings': {
+		message: 'correctly handles warnings',
+		options: {
+			onRevertLayerKeyword: 'warn',
+			onMixedLayerOrder: 'warn',
+		},
+		warnings: 2,
+	}
 });
