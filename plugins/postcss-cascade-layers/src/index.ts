@@ -36,7 +36,7 @@ const creator: PluginCreator<pluginOptions> = (opts?: pluginOptions) => {
 			if(options.onImportLayerRule){
 				root.walkAtRules('import', (atRule) => {
 					if(atRule.params.includes('layer')){
-						atRule.warn(result, 'To use the @import at-rule with layer, the postcss-import plugin is also required. This plugin alone will not support importing layers.');
+						atRule.warn(result, 'To use @import with layers, the postcss-import plugin is also required. This plugin alone will not support using the @import at-rule.');
 					}
 				},
 				);

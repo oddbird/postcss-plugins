@@ -5,7 +5,7 @@
 [<img alt="Build Status" src="https://github.com/csstools/postcss-plugins/workflows/test/badge.svg" height="20">][cli-url]
 [<img alt="Discord" src="https://shields.io/badge/Discord-5865F2?logo=discord&logoColor=white">][discord]
 
-[PostCSS Cascade Layers] lets you use `@layer` following the [Cascade Layers Specification]. For more information on layers, checkout out [A Complete Guide to CSS Cascade Layers] by Miriam Suzanne.   
+[PostCSS Cascade Layers] lets you use `@layer` following the [Cascade Layers Specification]. For more information on layers, checkout [A Complete Guide to CSS Cascade Layers] by Miriam Suzanne.   
 
 ```pcss
 
